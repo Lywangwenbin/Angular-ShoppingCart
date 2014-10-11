@@ -1,0 +1,59 @@
+﻿<!doctype html>
+<html ng-app>
+<head>
+	<meta charset="UTF-8"></meta>
+	<title>Angular Shopping Cart</title>	
+	<script src="http://cdn.bootcss.com/angular.js/1.2.16/angular.min.js"></script>
+	<script type="text/JavaScript">
+		function CartController($scope){
+			$scope.bill = {};
+			$scope.bill.discount = 0;
+			
+			$scope.items = [{title:"iphone5s",quantity:8,price:450.95},
+				{title:"ipad air",quantity:9,price:380.95},
+				{title:"mac air",quantity:10,price:850.95}
+			];
+			
+			$scope.remove = function(index){
+				$scope.items.splice(index,1);
+			}
+			
+			$scope.totalCart = function(){
+				var total = 0;
+				for(var i = 0,len = $scope.items.length;i<len;i++){
+					var item = $scope.items[i];
+					total = total + item.price*item.quantity;
+				}
+				return total;
+			}
+			
+			$scope.subtotal = function(){
+				return $scope.totalCart() - $scope.bill.discount;
+			}
+			
+			function calculateDiscount(newValue,oldValue,scope){
+				$scope.bill.discount = newValue >= 100?10:0;
+			}
+			
+			$scope.$watch($scope.totalCart,calculateDiscount);
+		}
+	</script>
+</head>
+<body>
+<div ng-controller = "CartController">
+	<h1>购物车</h1>
+	<div ng-repeat="item in items" class="goodsitem">
+		<span>{{item.title}}</span>
+		<input ng-model="item.quantity">
+		<span>{{item.price | currency}}</span>
+		<span>{{item.price*item.quantity | currency}}</span>
+		<button ng-click="remove($index)">Remove</button>
+	</div>
+	<div class="price">
+		<p><span>Total:</span> {{totalCart() | currency}}</p>
+		<p><span>Discount:</span> {{bill.discount | currency}}</p>
+		<p><span>Subtotal:</span> {{subtotal() | currency}}</p>
+	</div>
+</div>
+</body>
+</html>
